@@ -1,0 +1,16 @@
+name: 02 - Workflow Events
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *' # Runs every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show the trigger
+        # This step prints the event name that triggered the workflow
+        run: echo "Triggered by event ${{ github.event_name }}"
