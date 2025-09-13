@@ -9,15 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Say hello
+        # This step prints "Hello, World!" to the console
         run: echo "Hello, World!"
 
   echo-goodbye:
     runs-on: ubuntu-latest
     steps:
-      - name: Failed step
+      - name: Successful step
+        # This step prints a message and then succeeds intentionally with exit 0
         run: |
-          echo "I will fail"
-          exit 1
+          echo "I will be successful"
+          exit 0
       - name: Say goodbye
+        # This step prints "Goodbye!" to the console
         run: echo "Goodbye!"
-        
