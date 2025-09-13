@@ -4,6 +4,48 @@ In GitHub Actions, **job artifacts** and **outputs** are essential for sharing d
 
 ---
 
+## GitHub Runners
+
+### What Are Runners?
+
+A **runner** is a server that has the GitHub Actions runner application installed. It listens for available jobs and runs one job at a time. There are two main types:
+
+- **GitHub-hosted runners:** Managed by GitHub, these are ephemeral virtual machines that are automatically created and destroyed for each job. They come pre-installed with popular tools and languages.
+- **Self-hosted runners:** Managed by you, these can be physical, virtual, on-premises, or in the cloud. You control the environment and installed software.
+
+### Common GitHub-hosted Runners
+
+| Label            | OS           | Description                                 |
+|------------------|--------------|---------------------------------------------|
+| `ubuntu-latest`  | Ubuntu Linux | Latest supported Ubuntu LTS (e.g., 22.04)   |
+| `windows-latest` | Windows      | Latest supported Windows Server             |
+| `macos-latest`   | macOS        | Latest supported macOS                      |
+
+You can also specify specific versions, e.g., `ubuntu-22.04`, `windows-2022`, `macos-14`.
+
+**Example:**
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running on Ubuntu"
+```
+
+### Key Points
+
+- Each job in a workflow runs on a fresh runner instance.
+- Runners have a pre-installed set of tools ([see full list](https://github.com/actions/runner-images)).
+- Artifacts and outputs are used to share data between jobs, since each job runs in isolation.
+- Self-hosted runners can be used for custom environments or to access private resources.
+
+### Security Considerations
+
+- GitHub-hosted runners are recommended for most use cases due to automatic updates and isolation.
+- Self-hosted runners should be secured and kept up to date, especially if exposed to public repositories.
+
+---
+
 ## Job Artifacts
 
 ### What Are Artifacts?
@@ -177,3 +219,5 @@ steps:
 - [GitHub Actions: Sharing data between jobs](https://docs.github.com/en/actions/using-workflows/sharing-data-between-jobs)
 - [actions/upload-artifact](https://github.com/actions/upload-artifact)
 - [actions/download-artifact](https://github.com/actions/download-artifact)
+- [About GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners)
+- [About self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)
