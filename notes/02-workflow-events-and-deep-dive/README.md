@@ -102,6 +102,41 @@ on:
       - 'src/**'
 ```
 
+#### Activity Types
+
+Many events support **activity types** (also called "actions" or "event types") that specify which specific activity within the event should trigger the workflow. For example:
+
+- **pull_request**:  
+  - `opened`: A pull request is created.
+  - `synchronize`: Commits are pushed to an existing pull request.
+  - `reopened`: A closed pull request is reopened.
+  - `closed`: A pull request is closed (merged or declined).
+  - `labeled`, `unlabeled`, `assigned`, `unassigned`, etc.
+
+- **issues**:  
+  - `opened`: An issue is created.
+  - `edited`: An issue is edited.
+  - `closed`: An issue is closed.
+  - `reopened`, `labeled`, `unlabeled`, etc.
+
+- **release**:  
+  - `published`: A release is published.
+  - `created`: A release is created as a draft.
+  - `edited`: A release is edited.
+  - `prereleased`, `unpublished`, etc.
+
+You can filter workflows to run only on specific activity types using the `types` keyword:
+
+```yaml
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+```
+
+This ensures your workflow only runs for the specified activities, making your automation more efficient and targeted.
+
+---
+
 ### Scheduled Events
 
 ```yaml
