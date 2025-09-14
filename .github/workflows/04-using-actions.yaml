@@ -1,0 +1,34 @@
+name: 04 - Using Actions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: using-actions/react-app
+    steps:
+      - name: Checkout Code
+        # This step checks out the repository code
+        uses: actions/checkout@v4
+      
+      - name: Printing folders
+        run: |
+          echo "Printing folder structure:"
+          ls -R
+
+      - name: Setup Node
+        # This step sets up Node.js version 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install Dependencies
+        # This step installs dependencies for the React app
+        run: npm ci
+
+      - name: Run Unit Tests
+        # This step runs the automated tests for the React app
+        run: npm run test
