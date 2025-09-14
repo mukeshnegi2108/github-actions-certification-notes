@@ -179,5 +179,3 @@ on:
 ## Conclusion
 
 Mastering workflow events is essential for building efficient, secure, and maintainable automation with GitHub Actions. By understanding the full range of events and how to configure them, you can tailor your workflows to respond precisely to your project's needs.
-
-For further reading,
