@@ -4,6 +4,52 @@ In GitHub Actions, **job artifacts** and **outputs** are essential for sharing d
 
 ---
 
+## Workflow Context
+
+### What is Workflow Context?
+
+The **workflow context** in GitHub Actions provides metadata and information about the workflow run, jobs, steps, and the GitHub environment. Contexts are special variables that you can use in your workflow YAML to access useful data, such as commit SHA, branch name, event type, and more.
+
+### Common Contexts
+
+- **github**: Contains information about the workflow run, repository, actor, event, etc.
+- **env**: Accesses environment variables.
+- **job**: Information about the current job.
+- **steps**: Outputs from previous steps in the current job.
+- **runner**: Information about the runner executing the job.
+- **secrets**: Accesses repository or organization secrets.
+- **strategy**: Information about the current matrix strategy.
+- **matrix**: Values for the current matrix job.
+
+### Example Usage
+
+```yaml
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print workflow context
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref }}"
+```
+
+### More on the `github` Context
+
+Some useful properties:
+- `${{ github.repository }}`: The owner and repository name (e.g., `octocat/Hello-World`)
+- `${{ github.ref }}`: The branch or tag ref that triggered the workflow
+- `${{ github.sha }}`: The commit SHA that triggered the workflow
+- `${{ github.actor }}`: The username of the person or app that initiated the workflow
+- `${{ github.event_name }}`: The name of the event that triggered the workflow (e.g., `push`, `pull_request`)
+- `${{ github.workflow }}`: The name of the workflow
+- `${{ github.run_id }}`: A unique number for each workflow run
+
+---
+
 ## GitHub Runners
 
 ### What Are Runners?
@@ -215,6 +261,7 @@ steps:
 
 ## References
 
+- [Contexts in GitHub Actions](https://docs.github.com/en/actions/learn-github-actions/contexts)
 - [GitHub Actions: Storing workflow data as artifacts](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts)
 - [GitHub Actions: Sharing data between jobs](https://docs.github.com/en/actions/using-workflows/sharing-data-between-jobs)
 - [actions/upload-artifact](https://github.com/actions/upload-artifact)
