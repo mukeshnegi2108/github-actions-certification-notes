@@ -26,10 +26,10 @@ jobs:
       - name: Sleep for 20 seconds
         run: sleep 20
 
-      - name: Failing step
+      - name: Succeed this time
         run: |
-          echo "This step will fail"
-          exit 1
+          echo "This step will succeed this time"
+          exit 0
 
       - name: I will be skipped
         if: ${{ success() }}
