@@ -1,0 +1,67 @@
+# Exercise Workflow for Security and Permissions
+# Covers:
+# - Using secrets securely
+# - Limiting GITHUB_TOKEN permissions (workflow and job level)
+# - Pinning actions by version/SHA
+# - Using environment protection rules
+# - Restricting workflow triggers and paths
+# - Example of branch protection integration
+
+name: 08 - Secure Workflow Example
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+  workflow_dispatch:
+
+permissions: # Workflow-level permissions (least privilege)
+  contents: read
+  issues: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: # Job-level permissions override
+      contents: read
+    steps:
+      - name: Checkout code (pinned version)
+        uses: actions/checkout@v4
+      - name: Use secret securely
+        run: echo "Secret length ${#MY_SECRET}"
+        env:
+          MY_SECRET: ${{ secrets.MY_SECRET }}
+      - name: Avoid printing secrets
+        run: echo "Secret is masked and not printed"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: production
+      url: https://your-app.example.com
+    steps:
+      - name: Deploy with environment secret
+        run: echo "Deploying with token of length ${#DEPLOY_TOKEN}"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.PRODUCTION_DEPLOY_TOKEN }}
+      - name: Require approval before deploy
+        run: echo "Deployment requires environment protection rules"
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print workflow actor and event
+        run: |
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+      - name: Reminder to review audit logs
+        run: echo "Review audit logs regularly for suspicious activity"
+
+  branch-protection:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Status check for protected branch
+        run: echo "This job runs only on protected main branch"

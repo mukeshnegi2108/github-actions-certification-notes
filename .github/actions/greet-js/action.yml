@@ -1,0 +1,16 @@
+name: 'Greet User'
+description: 'Greets the user with a customizable message'
+inputs:
+  username:
+    description: 'Name of the user to greet'
+    required: true
+  greeting:
+    description: 'Greeting message'
+    required: false
+    default: 'Hello'
+outputs:
+  time:
+    description: 'The time the greeting was generated'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

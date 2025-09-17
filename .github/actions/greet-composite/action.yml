@@ -1,0 +1,9 @@
+name: 'Greet Composite'
+description: 'Runs multiple shell commands'
+runs:
+  using: 'composite'
+  steps:
+    - run: echo "Step 1 Composite action started"
+      shell: bash
+    - run: echo "Step 2 Composite action finished"
+      shell: bash

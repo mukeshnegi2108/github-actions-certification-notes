@@ -1,0 +1,61 @@
+# Exercise Workflow for Job Artifacts and Outputs
+# Covers:
+# - Workflow context usage
+# - Runners (ubuntu-latest)
+# - Uploading and downloading artifacts
+# - Setting and consuming job outputs
+# - Step outputs
+# - Artifact retention
+# - Job dependencies and outputs
+
+name: 03 - Artifacts and Outputs Workflow
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Runner selection
+    outputs:
+      artifact-path: ${{ steps.set-path.outputs.artifact-path }} # Job output
+    steps:
+      - name: Print workflow context
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref }}"
+      - name: Build
+        run: |
+          mkdir -p dist
+          echo "Hello World" > dist/hello.txt
+      - name: Set artifact path output
+        id: set-path
+        run: echo "artifact-path=dist/hello.txt" >> $GITHUB_OUTPUT # Step output
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3 # Upload artifact
+        with:
+          name: build-artifact
+          path: dist/
+          retention-days: 7 # Artifact retention
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build # Job dependency
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3 # Download artifact
+        with:
+          name: build-artifact
+          path: ./downloaded-dist
+      - name: Print downloaded files
+        run: ls ./downloaded-dist
+      - name: Use job output from build
+        run: echo "Artifact path from build job ${{ needs.build.outputs.artifact-path }}"
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    steps:
+      - name: Print summary
+        run: echo "Workflow completed. Artifacts and outputs were shared between jobs."

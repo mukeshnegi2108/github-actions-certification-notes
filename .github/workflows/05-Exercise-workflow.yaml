@@ -1,0 +1,85 @@
+# Exercise Workflow for Controlling Job Flows and Execution
+# Covers:
+# - Conditional execution with 'if' (job and step level)
+# - Job dependencies with 'needs'
+# - Matrix builds with advanced features
+# - Manual triggers with inputs
+# - Error handling and job control
+# - Passing outputs between jobs
+
+name: 05 - Job Flow Control Workflow
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: echo "Building..."
+
+  test:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      fail-fast: false # Continue all matrix jobs even if one fails
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [14, 16]
+        exclude:
+          - os: windows-latest
+            node: 14 # Example exclusion
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - run: npm test
+      - name: Upload coverage
+        if: success() && github.ref == 'refs/heads/main'
+        run: echo "Uploading coverage..."
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - run: npm run lint
+      - name: Lint only on main branch
+        if: github.ref == 'refs/heads/main'
+        run: echo "Linting main branch..."
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Deploy
+        run: echo "Deploying to production..."
+
+  manual-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Manual deployment
+        run: echo "Deploying to ${{ github.event.inputs.environment }}"
+
+  error-handling:
+    runs-on: ubuntu-latest
+    needs: build
+    continue-on-error: true # Allow this job to fail without failing the workflow
+    steps:
+      - name: Simulate error
+        run: exit 1
+      - name: Always run step
+        if: always()
+        run: echo "This runs even if previous step fails."

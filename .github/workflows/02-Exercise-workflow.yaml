@@ -1,0 +1,63 @@
+# Exercise Workflow for Workflow Events Deep Dive
+# Covers:
+# - Multiple event triggers (push, pull_request, issues, release, schedule, workflow_dispatch, repository_dispatch)
+# - Advanced event filtering (branches, paths, types)
+# - Scheduled events (cron)
+# - Manual trigger with inputs
+# - Accessing event payload/context
+# - Security best practices (filters, least privilege)
+
+name: 02 - Events Deep Dive Workflow
+
+on:
+  push: # Platform event
+    branches: [main, develop] # Branch filtering
+    paths:
+      - 'src/**' # Path filtering
+  pull_request: # Platform event
+    types: [opened, synchronize, reopened] # Activity type filtering
+    branches: [main]
+    paths:
+      - 'src/**'
+  issues: # Platform event
+    types: [opened, closed]
+  release: # Platform event
+    types: [published, edited]
+  schedule: # Scheduled event
+    - cron: '0 0 * * 0' # Every Sunday at midnight UTC
+  workflow_dispatch: # Manual trigger
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+  repository_dispatch: # External trigger
+
+jobs:
+  event-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print event name
+        run: |
+          echo "Event: ${{ github.event_name }}" # Access event context
+      - name: Print event payload file path
+        run: |
+          echo "Payload file: $GITHUB_EVENT_PATH"
+      - name: Print workflow input
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "Environment: ${{ github.event.inputs.environment }}"
+
+  secure-job:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Security best practice
+        run: echo "This job only runs for filtered PR events on main branch and src/ path."
+
+  scheduled-job:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Scheduled report
+        run: echo "Running scheduled job (e.g., weekly report)"

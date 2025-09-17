@@ -1,0 +1,69 @@
+# Exercise Workflow for Jobs and Docker Containers
+# Covers:
+# - Running jobs in Docker containers
+# - Using public and custom images
+# - Service containers for integration testing
+# - Multi-container jobs with dependencies
+# - Secure registry credentials
+# - Best practices (pin versions, secrets, cleanup)
+
+name: 06 - Docker Containers Workflow
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build-node:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20.10.0 # Pin exact version for consistency
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+
+  test-python:
+    runs-on: ubuntu-latest
+    needs: build-node
+    container:
+      image: python:3.11-slim
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Wait for Postgres
+        run: |
+          for i in {1..10}; do
+            nc -z localhost 5432 && break
+            sleep 2
+          done
+      - name: Run tests
+        run: pytest
+
+  custom-image-job:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/your-org/your-custom-image:latest
+      credentials:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    steps:
+      - name: Custom image step
+        run: echo "Running in custom Docker image!"
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [build-node, test-python, custom-image-job]
+    steps:
+      - name: Cleanup temp files
+        run: rm -rf /tmp/*

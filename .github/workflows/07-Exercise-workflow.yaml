@@ -1,0 +1,47 @@
+# Exercise Workflow for Building and Using Custom Actions
+# Covers:
+# - Using JavaScript, Docker, and composite custom actions
+# - Referencing actions locally and from remote repositories
+# - Passing inputs and reading outputs
+# - Best practices (versioning, error handling, documentation)
+# - Debugging and troubleshooting
+
+name: 07 - Custom Actions Workflow
+
+on: [push, workflow_dispatch]
+
+jobs:
+  js-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run JavaScript custom action (local)
+        uses: ./actions/greet-js
+        with:
+          username: 'Alice'
+          greeting: 'Welcome'
+
+  docker-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Docker custom action (local)
+        uses: ./actions/greet-docker
+
+  composite-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run composite custom action (local)
+        uses: ./actions/greet-composite
+
+  debug-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable debug logging
+        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+      - name: Run action with debug
+        uses: ./actions/greet-js
+        with:
+          username: 'DebugUser'
+      - name: Print output from action
+        run: echo "Greeting time ${{ steps.greet-js.outputs.time }}"

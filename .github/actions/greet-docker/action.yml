@@ -1,0 +1,5 @@
+name: 'Greet Docker'
+description: 'Greets from inside a Docker container'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
