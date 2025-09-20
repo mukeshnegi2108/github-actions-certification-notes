@@ -10,15 +10,6 @@
 name: 02 - Events Deep Dive Workflow
 
 on:
-  push: # Platform event
-    branches: [main, develop] # Branch filtering
-    paths:
-      - 'src/**' # Path filtering
-  pull_request: # Platform event
-    types: [opened, synchronize, reopened] # Activity type filtering
-    branches: [main]
-    paths:
-      - 'src/**'
   issues: # Platform event
     types: [opened, closed]
   release: # Platform event

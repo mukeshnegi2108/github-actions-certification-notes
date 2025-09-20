@@ -10,10 +10,6 @@
 name: 08 - Secure Workflow Example
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/**'
   workflow_dispatch:
 
 permissions: # Workflow-level permissions (least privilege)

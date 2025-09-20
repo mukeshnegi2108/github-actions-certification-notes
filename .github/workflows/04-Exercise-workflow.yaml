@@ -9,7 +9,7 @@
 
 name: 04 - Env Vars and Secrets Workflow
 
-on: [push, workflow_dispatch]
+on: [workflow_dispatch]
 
 env: # Workflow-level environment variable
   GLOBAL_VAR: 'Available to all jobs and steps'

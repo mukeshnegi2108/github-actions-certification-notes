@@ -10,7 +10,7 @@
 
 name: 03 - Artifacts and Outputs Workflow
 
-on: [push, workflow_dispatch]
+on: [workflow_dispatch]
 
 jobs:
   build:
